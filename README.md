@@ -11,7 +11,7 @@ Details to be added...
 5. Flow all images in test_images as follows (output will go to test_images/out):
 
 ```
-/flow --imgdir test_images/ --model yolo-obj.cfg --load yolo-obj_2000.weights 
+./flow --imgdir test_images/ --model yolo-obj.cfg --load yolo-obj_2000.weights 
 ```
 
 6. Run on a single image from within Python (running on CPU):
