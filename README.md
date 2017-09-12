@@ -1,3 +1,11 @@
+#### Training the SSD w/Inception TL model
+
+Details to be added...
+
+#### Using the SSD w/Inception TL model for detection
+
+See Jupyter notebook
+
 #### Training the YOLO TL model
 
 Details to be added...
