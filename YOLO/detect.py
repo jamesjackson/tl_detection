@@ -6,8 +6,9 @@ options = {"model": "yolo-obj.cfg", "load": "yolo-obj_2000.weights", "threshold"
 
 tfnet = TFNet(options)
 
-imgcv = cv2.imread("./test_images/left0315.jpg")
-start = time()
-result = tfnet.return_predict(imgcv)
-print(time() - start)
-print(result)
+for i in range (5):
+  imgcv = cv2.imread("./left0315.jpg")
+  start = time()
+  result = tfnet.return_predict(imgcv)
+  print(time() - start)
+  print(result)

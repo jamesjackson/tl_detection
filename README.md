@@ -1,19 +1,77 @@
-#### Training the SSD w/Inception TL model
+#### SSD w/Inception TL Training
 
 Details to be added...
 
-#### Using the SSD w/Inception TL model for detection
+#### SSD w/Inception TL Inference
 
 See Jupyter notebook
 
-#### Training the YOLO TL model
+#### YOLO Training
 
-Details to be added...
+1. Clone modified [Darknet](https://github.com/AlexeyAB/darknet)
+2. Draw bounding boxes using [YOLO mark](https://github.com/AlexeyAB/Yolo_mark) (annotations formatted for YOLO)
+3. Place yolo-obj.cfg, obj.data, obj.names, and train.txt from this repo into darkent data folder. Update train.txt with training image paths.
+4. Download pre-trained weights for conv layers - [darknet19_448.conv.23](http://pjreddie.com/media/files/darknet19_448.conv.23)
+5. Train YOLO
 
-#### Using the YOLO TL model for detection via Darkflow
+```
+./darknet detector train data/obj.data yolo-obj.cfg darknet19_448.conv.23
+```
+
+See [here](https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects) for additional details.
+
+#### YOLO Inference via Darknet
+
+Run on a single image. Inference time: ~27ms
+
+```
+ubuntu@ip-172-31-8-216:~/darknet$ ./darknet detector test data/obj.data yolo-obj.cfg yolo-obj_2000.weights left0315.jpg
+layer     filters    size              input                output
+    0 conv     32  3 x 3 / 1   416 x 416 x   3   ->   416 x 416 x  32
+    1 max          2 x 2 / 2   416 x 416 x  32   ->   208 x 208 x  32
+    2 conv     64  3 x 3 / 1   208 x 208 x  32   ->   208 x 208 x  64
+    3 max          2 x 2 / 2   208 x 208 x  64   ->   104 x 104 x  64
+    4 conv    128  3 x 3 / 1   104 x 104 x  64   ->   104 x 104 x 128
+    5 conv     64  1 x 1 / 1   104 x 104 x 128   ->   104 x 104 x  64
+    6 conv    128  3 x 3 / 1   104 x 104 x  64   ->   104 x 104 x 128
+    7 max          2 x 2 / 2   104 x 104 x 128   ->    52 x  52 x 128
+    8 conv    256  3 x 3 / 1    52 x  52 x 128   ->    52 x  52 x 256
+    9 conv    128  1 x 1 / 1    52 x  52 x 256   ->    52 x  52 x 128
+   10 conv    256  3 x 3 / 1    52 x  52 x 128   ->    52 x  52 x 256
+   11 max          2 x 2 / 2    52 x  52 x 256   ->    26 x  26 x 256
+   12 conv    512  3 x 3 / 1    26 x  26 x 256   ->    26 x  26 x 512
+   13 conv    256  1 x 1 / 1    26 x  26 x 512   ->    26 x  26 x 256
+   14 conv    512  3 x 3 / 1    26 x  26 x 256   ->    26 x  26 x 512
+   15 conv    256  1 x 1 / 1    26 x  26 x 512   ->    26 x  26 x 256
+   16 conv    512  3 x 3 / 1    26 x  26 x 256   ->    26 x  26 x 512
+   17 max          2 x 2 / 2    26 x  26 x 512   ->    13 x  13 x 512
+   18 conv   1024  3 x 3 / 1    13 x  13 x 512   ->    13 x  13 x1024
+   19 conv    512  1 x 1 / 1    13 x  13 x1024   ->    13 x  13 x 512
+   20 conv   1024  3 x 3 / 1    13 x  13 x 512   ->    13 x  13 x1024
+   21 conv    512  1 x 1 / 1    13 x  13 x1024   ->    13 x  13 x 512
+   22 conv   1024  3 x 3 / 1    13 x  13 x 512   ->    13 x  13 x1024
+   23 conv   1024  3 x 3 / 1    13 x  13 x1024   ->    13 x  13 x1024
+   24 conv   1024  3 x 3 / 1    13 x  13 x1024   ->    13 x  13 x1024
+   25 route  16
+   26 reorg              / 2    26 x  26 x 512   ->    13 x  13 x2048
+   27 route  26 24
+   28 conv   1024  3 x 3 / 1    13 x  13 x3072   ->    13 x  13 x1024
+   29 conv     30  1 x 1 / 1    13 x  13 x1024   ->    13 x  13 x  30
+   30 detection
+Loading weights from yolo-obj_2000.weights...Done!
+left0315.jpg: Predicted in 0.026677 seconds.
+traffic light: 90%
+Not compiled with OpenCV, saving to predictions.png instead
+```
+
+YOLO Prediction
+![YOLO prediction](YOLO/predictions.png)
+
+
+#### YOLO Inference via Darkflow
 
 1. Clone [Darkflow](https://github.com/thtrieu/darkflow)
-2. Clone this repo and move contents to darkflow folder
+2. Place detect.py, labels.txt, and yolo-obj.cfg from this repo into darkflow folder
 3. Download YOLO [weights](https://drive.google.com/file/d/0B_SXDGKPsMsfYmdia1lzUjlSaXM/view?usp=sharing) into darkflow folder
 4. Cythonize Darkflow (python setup.py build_ext --inplace) - works with Python 2.7 or Python 3
 5. Flow all images in test_images as follows (output will go to test_images/out):
@@ -22,16 +80,16 @@ Details to be added...
 ./flow --imgdir test_images/ --model yolo-obj.cfg --load yolo-obj_2000.weights 
 ```
 
-6. Run on a single image from within Python (running on CPU):
+6. Run on a single image from within Python (loop 5 times to prime Tesla M60 GPU). Inference time: ~63ms
 
 ```
-(carla) MacBook-Pro:darkflow jamesjackson$ python detect.py 
-/Users/jamesjackson/carnd/term3_final_project/darkflow/darkflow/dark/darknet.py:54: UserWarning: ./cfg/yolo-obj_2000.cfg not found, use yolo-obj.cfg instead
+ubuntu@ip-172-31-8-216:~/darkflow$ python detect.py 
+/home/ubuntu/darkflow/darkflow/dark/darknet.py:54: UserWarning: ./cfg/yolo-obj_2000.cfg not found, use yolo-obj.cfg instead
   cfg_path, FLAGS.model))
 Parsing yolo-obj.cfg
 Loading yolo-obj_2000.weights ...
 Successfully identified 268242952 bytes
-Finished in 0.0328640937805s
+Finished in 0.015836477279663086s
 
 Building net ...
 Source | Train? | Layer description                | Output size
@@ -69,12 +127,35 @@ Source | Train? | Layer description                | Output size
  Load  |  Yep!  | conv 1x1p0_1    linear           | (?, 13, 13, 30)
 -------+--------+----------------------------------+---------------
 GPU mode with 1.0 usage
-2017-09-10 18:03:35.175760: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.2 instructions, but these are available on your machine and could speed up CPU computations.
-2017-09-10 18:03:35.175778: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX instructions, but these are available on your machine and could speed up CPU computations.
-2017-09-10 18:03:35.175784: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX2 instructions, but these are available on your machine and could speed up CPU computations.
-2017-09-10 18:03:35.175789: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use FMA instructions, but these are available on your machine and could speed up CPU computations.
-Finished in 7.55257201195s
+2017-09-20 18:51:26.297657: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:893] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2017-09-20 18:51:26.298012: I tensorflow/core/common_runtime/gpu/gpu_device.cc:940] Found device 0 with properties: 
+name: Tesla M60
+major: 5 minor: 2 memoryClockRate (GHz) 1.1775
+pciBusID 0000:00:1e.0
+Total memory: 7.43GiB
+Free memory: 7.36GiB
+2017-09-20 18:51:26.298036: I tensorflow/core/common_runtime/gpu/gpu_device.cc:961] DMA: 0 
+2017-09-20 18:51:26.298046: I tensorflow/core/common_runtime/gpu/gpu_device.cc:971] 0:   Y 
+2017-09-20 18:51:26.298064: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1030] Creating TensorFlow device (/gpu:0) -> (device: 0, name: Tesla M60, pci bus id: 0000:00:1e.0)
+2017-09-20 18:51:26.307881: E tensorflow/stream_executor/cuda/cuda_driver.cc:924] failed to allocate 7.43G (7983005696 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY
+2017-09-20 18:51:26.870792: I tensorflow/compiler/xla/service/platform_util.cc:58] platform CUDA present with 1 visible devices
+2017-09-20 18:51:26.870826: I tensorflow/compiler/xla/service/platform_util.cc:58] platform Host present with 16 visible devices
+2017-09-20 18:51:26.874851: I tensorflow/compiler/xla/service/service.cc:198] XLA service 0x545c5e0 executing computations on platform Host. Devices:
+2017-09-20 18:51:26.874874: I tensorflow/compiler/xla/service/service.cc:206]   StreamExecutor device (0): <undefined>, <undefined>
+2017-09-20 18:51:26.875018: I tensorflow/compiler/xla/service/platform_util.cc:58] platform CUDA present with 1 visible devices
+2017-09-20 18:51:26.875034: I tensorflow/compiler/xla/service/platform_util.cc:58] platform Host present with 16 visible devices
+2017-09-20 18:51:26.876541: I tensorflow/compiler/xla/service/service.cc:198] XLA service 0x535fe20 executing computations on platform CUDA. Devices:
+2017-09-20 18:51:26.876557: I tensorflow/compiler/xla/service/service.cc:206]   StreamExecutor device (0): Tesla M60, Compute Capability 5.2
+Finished in 8.190787076950073s
 
-1.06604599953
-[{'topleft': {'y': 363, 'x': 550}, 'confidence': 0.90037251, 'bottomright': {'y': 516, 'x': 605}, 'label': 'traffic light'}]
+1.4682774543762207
+[{'label': 'traffic light', 'confidence': 0.90037262, 'topleft': {'x': 550, 'y': 363}, 'bottomright': {'x': 605, 'y': 516}}]
+0.06563544273376465
+[{'label': 'traffic light', 'confidence': 0.90037262, 'topleft': {'x': 550, 'y': 363}, 'bottomright': {'x': 605, 'y': 516}}]
+0.06284618377685547
+[{'label': 'traffic light', 'confidence': 0.90037262, 'topleft': {'x': 550, 'y': 363}, 'bottomright': {'x': 605, 'y': 516}}]
+0.06300640106201172
+[{'label': 'traffic light', 'confidence': 0.90037262, 'topleft': {'x': 550, 'y': 363}, 'bottomright': {'x': 605, 'y': 516}}]
+0.06336641311645508
+[{'label': 'traffic light', 'confidence': 0.90037262, 'topleft': {'x': 550, 'y': 363}, 'bottomright': {'x': 605, 'y': 516}}]
 ```
