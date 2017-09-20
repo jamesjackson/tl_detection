@@ -64,7 +64,7 @@ traffic light: 90%
 Not compiled with OpenCV, saving to predictions.png instead
 ```
 
-YOLO Prediction
+
 ![YOLO prediction](YOLO/predictions.png)
 
 
