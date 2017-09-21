@@ -1,15 +1,53 @@
-#### SSD w/Inception Training
 
-PENDING
 
-#### SSD w/Inception Inference
+#### Tensorflow Object Detection API
+
+[Tensorflow Object Detection API](https://github.com/tensorflow/models/tree/master/object_detection)
+
+[Tensorflow detection model zoo](https://github.com/tensorflow/models/blob/master/object_detection/g3doc/detection_model_zoo.md)
+
+Papers:
+
+[SSD: Single Shot MultiBox Detector](https://arxiv.org/abs/1512.02325)
+
+[Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks](https://arxiv.org/abs/1506.01497)
+
+##### SSD w/Inception Training
+
+1. Draw bounding boxes and annotate via [RectLabel](https://rectlabel.com/). The annotations will be in [PASCAL VOC](http://host.robots.ox.ac.uk/pascal/VOC/) format.
+2. Create TFrecords from images and annotations using create_tl_tf_record.py script in this repo. This will generate tl_train.record (training record with 70% data) and tl_val.record (validation record with 30% data).
+3. Configure Tensorflow Object Detection API as described [here](https://github.com/tensorflow/models/blob/master/object_detection/g3doc/installation.md).
+4. Grab ssd_inception_v2_tl.config from this repo.
+5. Train the model:
+
+```
+python object_detection/train.py --logtostderr --pipeline_config_path=./ssd_inception_v2_tl.config --train_dir=./tl_output
+```
+
+##### SSD w/Inception Inference
 
 - [Jupyter Notebook for simulator images](SSD_Inception/tl_detection_classification_sim.ipynb)
 - [Jupyter Notebook for real world images](SSD_Inception/tl_detection_classification.ipynb)
 
 Inference time on Tesla M60 GPU: ~32ms
 
-#### YOLO Training
+##### Other Models
+
+Faster R-CNN with Resnet-101, highly accurate bounding boxes, inference time on Tesla M60 GPU: ~330ms
+
+SSD MobileNet v1, poorer fits on bounding boxes, inference time on Tesla M60 GPU: ~20ms
+
+#### YOLO
+
+[YOLO: Real-Time Object Detection](https://pjreddie.com/darknet/yolo/)
+ 
+Papers:
+
+[You Only Look Once: Unified, Real-Time Object Detection](https://arxiv.org/abs/1506.02640)
+
+[YOLO9000: Better, Faster, Stronger](https://arxiv.org/abs/1612.08242)
+
+##### YOLO Training
 
 1. Clone modified [Darknet](https://github.com/AlexeyAB/darknet)
 2. Draw bounding boxes using [YOLO mark](https://github.com/AlexeyAB/Yolo_mark) (annotations formatted for YOLO)
@@ -23,7 +61,7 @@ Inference time on Tesla M60 GPU: ~32ms
 
 See [here](https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects) for additional details.
 
-#### YOLO Inference via Darknet
+##### YOLO Inference via Darknet
 
 Run on a single image. Inference time on Tesla M60 GPU: ~27ms
 
@@ -71,7 +109,7 @@ Not compiled with OpenCV, saving to predictions.png instead
 ![YOLO prediction](YOLO/predictions.png)
 
 
-#### YOLO Inference via Darkflow
+##### YOLO Inference via Darkflow
 
 1. Clone [Darkflow](https://github.com/thtrieu/darkflow)
 2. Place detect.py, labels.txt, and yolo-obj.cfg from this repo into darkflow folder
