@@ -1,10 +1,13 @@
-#### SSD w/Inception TL Training
+#### SSD w/Inception Training
 
-Details to be added...
+PENDING
 
-#### SSD w/Inception TL Inference
+#### SSD w/Inception Inference
 
-See Jupyter notebook
+- [Jupyter Notebook for simulator images](SSD_Inception/tl_detection_classification_sim.ipynb)
+- [Jupyter Notebook for real world images](SSD_Inception/tl_detection_classification.ipynb)
+
+Inference time on Tesla M60 GPU: ~32ms
 
 #### YOLO Training
 
@@ -22,7 +25,7 @@ See [here](https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custo
 
 #### YOLO Inference via Darknet
 
-Run on a single image. Inference time: ~27ms
+Run on a single image. Inference time on Tesla M60 GPU: ~27ms
 
 ```
 ubuntu@ip-172-31-8-216:~/darknet$ ./darknet detector test data/obj.data yolo-obj.cfg yolo-obj_2000.weights left0315.jpg
@@ -80,7 +83,7 @@ Not compiled with OpenCV, saving to predictions.png instead
 ./flow --imgdir test_images/ --model yolo-obj.cfg --load yolo-obj_2000.weights 
 ```
 
-6. Run on a single image from within Python (loop 5 times to prime Tesla M60 GPU). Inference time: ~63ms
+6. Run on a single image from within Python (loop 5 times to prime GPU). Inference time on Tesla M60 GPU: ~63ms
 
 ```
 ubuntu@ip-172-31-8-216:~/darkflow$ python detect.py 
