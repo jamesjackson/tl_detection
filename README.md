@@ -2,9 +2,9 @@
 
 #### Tensorflow Object Detection API
 
-[Tensorflow Object Detection API](https://github.com/tensorflow/models/tree/master/object_detection)
+[Tensorflow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection)
 
-[Tensorflow detection model zoo](https://github.com/tensorflow/models/blob/master/object_detection/g3doc/detection_model_zoo.md)
+[Tensorflow detection model zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md)
 
 Papers:
 
